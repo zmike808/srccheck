@@ -41,7 +41,7 @@ from utilities import VERSION
 import csv
 from math import sqrt
 
-def scatter_plot (cmdline_arguments,
+def scatter_plot(cmdline_arguments,
                   x_metric_name,
                   y_metric_name,
                   ball_metric_name,
@@ -63,7 +63,7 @@ def scatter_plot (cmdline_arguments,
         for row in reader:
             x_metric_value = float(row.get(x_metric_name,0))
             y_metric_value = float(row.get(y_metric_name,0))
-            distance_to_origin = sqrt(x_metric_value*x_metric_value + y_metric_value*y_metric_value)
+            distance_to_origin = sqrt(x_metric_value**2 + y_metric_value**2)
             if distance_to_origin < min_dist_to_origin:
                 continue  # skip
             ball_metric_value = float(row.get(ball_metric_name,0))

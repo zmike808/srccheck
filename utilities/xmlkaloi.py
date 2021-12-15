@@ -46,11 +46,10 @@ def load_xml(xml_path):
 
 
 def load_json(max_metrics_json_or_path):
-    if os.path.isfile(max_metrics_json_or_path):
-        with open(max_metrics_json_or_path) as max_metrics_json:
-            return json.load(max_metrics_json)
-    else:
+    if not os.path.isfile(max_metrics_json_or_path):
         return json.loads(max_metrics_json_or_path)
+    with open(max_metrics_json_or_path) as max_metrics_json:
+        return json.load(max_metrics_json)
 
 def write_json(json_path, new_max_metrics):
     if os.path.isfile(json_path):
@@ -59,8 +58,8 @@ def write_json(json_path, new_max_metrics):
 
 def process_xml_metrics(max_metrics, metrics_with_xpaths, xml):
     violation_count = 0
-    current_metrics = dict()
-    violators = list()
+    current_metrics = {}
+    violators = []
     for metric_name, xpath in metrics_with_xpaths.items():
         xpath_parts = xpath.split("@")  # ET workaround. No attrib support in xpath
         element_xpath = xpath_parts[0]

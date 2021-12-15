@@ -97,7 +97,7 @@ def stream_of_entity_with_metrics (entities, metrics, verbose, skipLibraries,reg
 
 
 
-def stream_of_entity_with_metric (entities, metric, verbose, skipLibraries,regex_str_ignore_item, regex_str_traverse_files, regex_ignore_files, skip_zeroes = False ):
+def stream_of_entity_with_metric(entities, metric, verbose, skipLibraries,regex_str_ignore_item, regex_str_traverse_files, regex_ignore_files, skip_zeroes = False ):
     for entity, container_file, metric_dict in stream_of_entity_with_metrics(entities,
                                                                                       (metric,),
                                                                                      verbose, skipLibraries,
@@ -112,9 +112,8 @@ def stream_of_entity_with_metric (entities, metric, verbose, skipLibraries,regex
                 continue
             if verbose:
                 print("WARNING: %s=0 for %s" % (metric, entity))
-        if metric_value < 0:
-            if verbose:
-                print("WARNING: %s<0 for %s" % (metric, entity))
+        if metric_value < 0 and verbose:
+            print("WARNING: %s<0 for %s" % (metric, entity))
         yield [entity, container_file, metric, metric_value]
 
 
@@ -216,33 +215,32 @@ def save_abstractness_x_instability_scatter(x_values, x_label, y_values, y_label
     _save_figure_as_html(fig, filename)
     return filename
 
-def save_csv (csv_path, cur_tracked_metrics_for_csv):
+def save_csv(csv_path, cur_tracked_metrics_for_csv):
     try:
-        file = open(csv_path, "w")
-        sep = ""
-        for metric_name,metric_value in sorted(cur_tracked_metrics_for_csv.items()):
-            file.write(sep)
-            file.write(metric_name)
-            sep = ","
-        file.write("\n")
-        sep = ""
-        for metric_name,metric_value in sorted(cur_tracked_metrics_for_csv.items()):
-            file.write(sep)
-            file.write(str(metric_value))
-            sep = ","
-        file.write("\n")
-        file.close()
+        with open(csv_path, "w") as file:
+            sep = ""
+            for metric_name,metric_value in sorted(cur_tracked_metrics_for_csv.items()):
+                file.write(sep)
+                file.write(metric_name)
+                sep = ","
+            file.write("\n")
+            sep = ""
+            for metric_name,metric_value in sorted(cur_tracked_metrics_for_csv.items()):
+                file.write(sep)
+                file.write(str(metric_value))
+                sep = ","
+            file.write("\n")
         return True
     except:
         return False
 
 
-def save_kiviat_with_values_and_thresholds (labels, values, threshold_values, file_name, title=None, max_vals = None, min_vals = None, thresholdslabel="limits", valueslabel="current"):
+def save_kiviat_with_values_and_thresholds(labels, values, threshold_values, file_name, title=None, max_vals = None, min_vals = None, thresholdslabel="limits", valueslabel="current"):
     if min_vals is None:
         min_vals = [min(round(t/2), round(v/2)) for v, t in zip(values, threshold_values)] # /2 because we want to avoid having all min points in the origin, for looks
     if max_vals is None:
         max_vals = [max(v, t, m + 0.001) for v, t, m in zip(values, threshold_values, min_vals)] #minimum plus 0.001 to prevent DivideBy Zero when max=min, bug #53
-    ranges = [(x,y) for x,y in zip (min_vals, max_vals)]
+    ranges = list(zip (min_vals, max_vals))
     fig1 = plt.figure(figsize=(12, 12))
     radar = ComplexRadar(fig1, labels, ranges, precision=1)
     radar.plot(threshold_values, color="green", label=thresholdslabel)

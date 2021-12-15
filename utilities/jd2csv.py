@@ -22,30 +22,29 @@ from math import sqrt
 from utilities import VERSION
 
 
-def jdepend_to_csv (xml_path, csv_path):
+def jdepend_to_csv(xml_path, csv_path):
     tree = ET.parse(xml_path)
     root = tree.getroot()
-    csv_file = open(csv_path, 'w')
-    csv_writer = csv.writer(csv_file)
-    csv_writer.writerow(["Component", "Efferent Coupling", "Afferent Coupling", "Instability", "Classes", "Abstract Classes", "Distance", "Normalized Distance", "Distance Percentage"])
-    sqrt2 = sqrt(2.0)
-    for java_package in root.findall("Packages")[0].findall("Package"):
-        name = java_package.attrib["name"]
-        stats = java_package.findall("Stats")
-        if len(stats) == 1:
-            stats = stats[0]
-            afferent_coupling = stats.find('Ca').text
-            efferent_coupling = stats.find('Ce').text
-            instability = float(stats.find('I').text)
-            distance = float(stats.find('D').text)
-            abstractness = float(stats.find('A').text)
-            total_classes = stats.find('TotalClasses').text
-            abstract_classes = stats.find('AbstractClasses').text
-            normalized_distance = abs(abstractness + instability - 1)
-            distance = normalized_distance / sqrt2
-            distance_as_percentage = int(math.trunc(100.0 * normalized_distance))
-            csv_writer.writerow([name, afferent_coupling, efferent_coupling, instability, total_classes, abstract_classes, distance, normalized_distance, distance_as_percentage])
-    csv_file.close()
+    with open(csv_path, 'w') as csv_file:
+        csv_writer = csv.writer(csv_file)
+        csv_writer.writerow(["Component", "Efferent Coupling", "Afferent Coupling", "Instability", "Classes", "Abstract Classes", "Distance", "Normalized Distance", "Distance Percentage"])
+        sqrt2 = sqrt(2.0)
+        for java_package in root.findall("Packages")[0].findall("Package"):
+            name = java_package.attrib["name"]
+            stats = java_package.findall("Stats")
+            if len(stats) == 1:
+                stats = stats[0]
+                afferent_coupling = stats.find('Ca').text
+                efferent_coupling = stats.find('Ce').text
+                instability = float(stats.find('I').text)
+                distance = float(stats.find('D').text)
+                abstractness = float(stats.find('A').text)
+                total_classes = stats.find('TotalClasses').text
+                abstract_classes = stats.find('AbstractClasses').text
+                normalized_distance = abs(abstractness + instability - 1)
+                distance = normalized_distance / sqrt2
+                distance_as_percentage = int(math.trunc(100.0 * normalized_distance))
+                csv_writer.writerow([name, afferent_coupling, efferent_coupling, instability, total_classes, abstract_classes, distance, normalized_distance, distance_as_percentage])
 
 def main():
     start_time = datetime.datetime.now()

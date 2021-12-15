@@ -110,15 +110,37 @@ class DummyEntity:
         return ""
 
 def _print_routine_violation(routine, metric_name, metric_value, container_file=None):
-    print("%s\t%s\t%s%s" % (metric_name, metric_value, routine.longname(),
-                            "" if container_file == None else "\t(in %s)" % container_file.longname()))
+    print(
+        (
+            "%s\t%s\t%s%s"
+            % (
+                metric_name,
+                metric_value,
+                routine.longname(),
+                ""
+                if container_file is None
+                else "\t(in %s)" % container_file.longname(),
+            )
+        )
+    )
 
 def _print_file_violation(file, metric_name, metric_value, container_file=None):
     print("%s\t%s\t%s " % (metric_name, metric_value, file.longname()))
 
 def _print_class_violation(a_class, metric_name, metric_value, container_file=None):
-    print("%s\t%s\t%s%s" % (metric_name, metric_value, a_class.longname(),
-                            "" if container_file == None else "\t(in %s)" % container_file.longname()))
+    print(
+        (
+            "%s\t%s\t%s%s"
+            % (
+                metric_name,
+                metric_value,
+                a_class.longname(),
+                ""
+                if container_file is None
+                else "\t(in %s)" % container_file.longname(),
+            )
+        )
+    )
 
 def _print_metric_violation(metric_name, metric_value, max_value):
     print ("%s:\t%s>%s" % (metric_name, metric_value, max_value))
@@ -134,7 +156,7 @@ def print_prj_metrics (prj_metrics):
         print(k,"=",v)
 
 
-def process_prj_metrics (cmdline_arguments, prj_metrics):
+def process_prj_metrics(cmdline_arguments, prj_metrics):
     max_metrics_json = cmdline_arguments["--maxPrjMetrics"]
     max_metrics = {}
     violation_count = 0
@@ -146,7 +168,7 @@ def process_prj_metrics (cmdline_arguments, prj_metrics):
         max_metrics = {}
     if not isinstance(max_metrics, dict):
         max_metrics = {}
-    if len(max_metrics) == 0: # No metrics passed in
+    if not max_metrics: # No metrics passed in
         print ("*** EMPTY PRJ Max Metrics. JSON error? (%s)" % max_metrics_json)
         return [0, {}, {}]
     max_metrics_found = {}
@@ -156,15 +178,14 @@ def process_prj_metrics (cmdline_arguments, prj_metrics):
             max_metrics_found [metric] = cur_value
             if cur_value > max_value:
                 _print_metric_violation (metric, cur_value, max_value)
-                violation_count = violation_count + 1
+                violation_count += 1
     return [violation_count, max_metrics_found, max_metrics]
 
 def metric_name_for_sorting(metric_name):
     if ":" not in metric_name:
         return metric_name
-    else:
-        parts = metric_name.split(":")
-        return parts[-1] + parts[0]
+    parts = metric_name.split(":")
+    return parts[-1] + parts[0]
 
 def process_generic_metrics (db, cmdline_arguments, jsonCmdLineParam, entityQuery, lambda_to_print, regex_str_ignore_item, scope_name):
     regex_str_traverse_files = cmdline_arguments.get("--regexTraverseFiles", "*")
