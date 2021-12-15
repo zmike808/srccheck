@@ -31,7 +31,7 @@ import math
 
 SQRT2 = math.sqrt(2.0)
 
-def hist_plot (cmdline_arguments):
+def hist_plot(cmdline_arguments):
     inputCSV = cmdline_arguments["--in"]
     histogram_column = cmdline_arguments["--histogramColumn"]
     data_values = []
@@ -41,7 +41,7 @@ def hist_plot (cmdline_arguments):
             data_value = float(row.get(histogram_column,0))
             data_values.append(data_value)
 
-    max_value = max(data_values) if len(data_values) > 0 else 0
+    max_value = max(data_values) if data_values else 0
     output_dir = cmdline_arguments["--outputDir"]
     file_prefix = "%s%s%s" % (output_dir, os.sep, os.path.split(cmdline_arguments["--in"])[-1])
     file_name, mean, median, pstdev = save_histogram(bool(cmdline_arguments["--showMeanMedian"]),

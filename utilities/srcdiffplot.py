@@ -95,21 +95,19 @@ def _name_of_entity(entity, scope):
     else:
         return entity.longname()
 
-def compute_metrics_before_after (db_before, db_after, cmdline_arguments, metrics_as_string, entityQuery, regex_str_ignore_item, scope_name):
+def compute_metrics_before_after(db_before, db_after, cmdline_arguments, metrics_as_string, entityQuery, regex_str_ignore_item, scope_name):
     regex_str_traverse_files = cmdline_arguments.get("--regexTraverseFiles", "*")
     regex_ignore_files = cmdline_arguments.get("--regexIgnoreFiles", None)
     skipLibraries = cmdline_arguments["--skipLibs"] == "true"
     verbose = cmdline_arguments["--verbose"]
     metrics = [metric.strip() for metric in metrics_as_string.split(",")]
     before_after_by_entity_name = {}
-    for entity, container_file, metric_dict in \
-            stream_of_entity_with_metrics(db_before.ents(entityQuery), metrics,
+    for entity, container_file, metric_dict in stream_of_entity_with_metrics(db_before.ents(entityQuery), metrics,
                                           verbose, skipLibraries,
                                          regex_str_ignore_item,
                                          regex_str_traverse_files,
                                          regex_ignore_files):
-        attribs = {}
-        attribs["before"] = metric_dict
+        attribs = {'before': metric_dict}
         before_after_by_entity_name[_name_of_entity(entity,scope_name)] = attribs
     for entity, container_file, metric_dict in \
             stream_of_entity_with_metrics(db_after.ents(entityQuery), metrics,
@@ -160,13 +158,13 @@ def add_stats(all_before, all_after, entity_names, colors):
     colors.append("c")
 
 
-def plot_diff_generic_metrics (db_before, db_after, cmdline_arguments, metrics_as_string, entityQuery, regex_str_ignore_item, scope_name):
+def plot_diff_generic_metrics(db_before, db_after, cmdline_arguments, metrics_as_string, entityQuery, regex_str_ignore_item, scope_name):
     before_after_by_entity_name = compute_metrics_before_after(db_before, db_after, cmdline_arguments,
                                                                metrics_as_string, entityQuery, regex_str_ignore_item,
                                                                scope_name)
 
     metric_names = [metric.strip() for metric in metrics_as_string.split(",")]
-    for i, metric_name in enumerate(metric_names):
+    for metric_name in metric_names:
         all_before, all_after, entity_names = collect_values_that_changed(before_after_by_entity_name, "before", "after", metric_name, int(cmdline_arguments["--minChange"]))
         if len(all_before) > 0:
             colors = ["r" if y > x else "g" for x,y in zip(all_before,all_after)]

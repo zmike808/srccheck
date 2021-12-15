@@ -45,9 +45,8 @@ STATS_LAMBDAS = {"AVG": statistics.mean,
 def metric_name_for_sorting(metric_name):
     if ":" not in metric_name:
         return metric_name
-    else:
-        parts = metric_name.split(":")
-        return parts[-1] + parts[0]
+    parts = metric_name.split(":")
+    return parts[-1] + parts[0]
 
 def process_csv_metrics (cmdline_arguments, max_values_allowed_by_metric):
     violation_count = 0
@@ -136,11 +135,10 @@ def process_csv_metrics (cmdline_arguments, max_values_allowed_by_metric):
 
 
 def load_metrics_thresholds(max_metrics_json_or_path):
-    if os.path.isfile(max_metrics_json_or_path):
-        with open(max_metrics_json_or_path) as max_metrics_json:
-            return json.load(max_metrics_json)
-    else:
+    if not os.path.isfile(max_metrics_json_or_path):
         return json.loads(max_metrics_json_or_path)
+    with open(max_metrics_json_or_path) as max_metrics_json:
+        return json.load(max_metrics_json)
 
 def write_metrics_thresholds(json_path, new_max_metrics):
     if os.path.isfile(json_path):
